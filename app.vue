@@ -1,5 +1,5 @@
 <template>
   <div>
-    Hello World!
+    Chatbot goes here
   </div>
 </template>
