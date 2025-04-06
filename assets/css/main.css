@@ -1,2 +1,11 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+
+.ai {
+  margin-bottom: calc(var(--spacing) * 8);
+}
+
+.user {
+  text-align: right;
+  margin-bottom: calc(var(--spacing) * 8);
+}
