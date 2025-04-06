@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <UApp>
     Chatbot goes here
-  </div>
+  </UApp>
 </template>
