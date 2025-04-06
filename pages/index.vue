@@ -21,14 +21,34 @@ const temperature = ref(0.5)
 
 const loading = ref(false)
 
-const messages = ref<Record<string, string>[]>([])
+const messages = ref<Record<string, string>[]>([
+  {
+    id: crypto.randomUUID(),
+    role: 'ai',
+    content: 'Hello! How may I help you today ?'
+  }
+])
 
-const thread = crypto.randomUUID()
+const thread = ref(crypto.randomUUID())
 
-const onSubmit = (e: Event) => {
+const onSubmit = async (e: Event) => {
   e.preventDefault()
-  messages.value = [...messages.value, { id: crypto.randomUUID(), type: 'user', text: question.value }]
+  messages.value = [...messages.value, { id: crypto.randomUUID(), role: 'user', content: question.value }]
   loading.value = true
+
+  try {
+    await useFetch('/api/chat', {
+      method: 'POST',
+      body: {
+        question: question.value,
+        model: model.value,
+        temperature: temperature.value,
+        thread: thread.value
+      }
+    })
+  } catch(e) {
+    console.error(e)
+  }
   // console.log('thread:', thread)
   // console.log('question:', question.value)
   // console.log('model:', model.value)
@@ -40,7 +60,7 @@ const onSubmit = (e: Event) => {
   <div class="mx-auto py-8 px-4 max-w-[48rem] h-[100vh]">
     <div class="flex flex-col h-full gap-8">
       <div class="grow-1 overflow-auto">
-        <div v-for="message in messages" :key="message.id" :class="message.type">{{ message.text }}</div>
+        <div v-for="message in messages" :key="message.id" :class="message.role">{{ message.content }}</div>
         <ThinkLoader v-if="loading" />
       </div>
       <div class="shrink-0 min-h-[150px]">
