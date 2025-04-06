@@ -1,5 +1,5 @@
 <template>
-  <div class="waviy">
+  <div class="waviy mb-8">
     <span style="--i:1">T</span>
     <span style="--i:2">h</span>
     <span style="--i:3">i</span>

@@ -19,11 +19,20 @@ const model = ref('deepseek/deepseek-r1:free')
 const question = ref('')
 const temperature = ref(0.5)
 
+const loading = ref(false)
+
+const messages = ref<Record<string, string>[]>([])
+
+const thread = crypto.randomUUID()
+
 const onSubmit = (e: Event) => {
   e.preventDefault()
-  console.log('question:', question.value)
-  console.log('model:', model.value)
-  console.log('temperature:', temperature.value)
+  messages.value = [...messages.value, { id: crypto.randomUUID(), type: 'user', text: question.value }]
+  loading.value = true
+  // console.log('thread:', thread)
+  // console.log('question:', question.value)
+  // console.log('model:', model.value)
+  // console.log('temperature:', temperature.value)
 }
 </script>
 
@@ -31,11 +40,8 @@ const onSubmit = (e: Event) => {
   <div class="mx-auto py-8 px-4 max-w-[48rem] h-[100vh]">
     <div class="flex flex-col h-full gap-8">
       <div class="grow-1 overflow-auto">
-        <div class="user">What can we expect will happen with respect to covid ten years from now?</div>
-        <ThinkLoader />
-        <!-- <div class="ai">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris ante ex, viverra quis aliquam a, luctus nec dolor. Etiam ligula felis, vehicula nec pellentesque sit amet, ornare ut odio. Suspendisse sed porta lectus. Nam pulvinar congue elit at vulputate. Nunc id lorem est. Sed rutrum quis sem in blandit. Etiam tempor finibus sapien, placerat venenatis magna sagittis ac. Nullam eget malesuada justo. Aenean accumsan pulvinar ante, id tincidunt magna fringilla sit amet. Vivamus urna nunc, tempus et ornare sed, cursus quis felis. Aliquam eu leo tortor. Donec consequat sit amet eros eu aliquet. Suspendisse lacinia, neque viverra fringilla luctus, nunc nulla consequat orci, at volutpat sapien justo in purus. Nam lectus est, ultrices id vestibulum vitae, bibendum quis nisi.
-        </div> -->
+        <div v-for="message in messages" :key="message.id" :class="message.type">{{ message.text }}</div>
+        <ThinkLoader v-if="loading" />
       </div>
       <div class="shrink-0 min-h-[150px]">
         <form class="w-full" @submit="onSubmit">
@@ -49,5 +55,6 @@ const onSubmit = (e: Event) => {
           </div>
         </form>
       </div>
-    </div>  </div>
+    </div>
+  </div>
 </template>
