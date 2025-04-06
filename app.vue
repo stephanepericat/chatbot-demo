@@ -1,5 +1,5 @@
 <template>
   <UApp>
-    Chatbot goes here
+    <NuxtPage />
   </UApp>
 </template>
