@@ -17,8 +17,8 @@ export default defineLazyEventHandler(() => {
 
   return defineEventHandler(async (event) => {
     // const { messages } = await readBody<{ messages: Message[] }>(event);
-    const { question, model, temperature, thread } = await readBody(event)
-    console.log({ question, model, temperature, thread })
+    const { messages, model, temperature, thread } = await readBody(event)
+    console.log({ messages, model, temperature, thread })
     return { ok: true }
 
     // const { stream, handlers } = LangChainStream();

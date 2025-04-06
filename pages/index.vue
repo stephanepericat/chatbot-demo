@@ -1,5 +1,10 @@
 <script setup lang="ts">
-const llms = ref([
+import { useChat } from '@ai-sdk/vue'
+import type { SelectItem } from '@nuxt/ui'
+
+const { messages, input, handleSubmit } = useChat()
+
+const llms = ref<SelectItem[]>([
   {type: 'label', label: 'AI Model'},
   {label: 'Deepseek/Deepseek R1', value: 'deepseek/deepseek-r1:free', selected: true },
   {label: 'Deepseek/Deepseek V3', value: 'deepseek/deepseek-chat:free' },
@@ -13,34 +18,22 @@ const llms = ref([
   {label: 'Microsoft/Phi3 medium', value: 'microsoft/phi-3-medium-128k-instruct:free' },
 ])
 
-const temps = ref([{type: 'label', label: 'Temperature'}, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0])
+const temps = ref<SelectItem[]>([{type: 'label', label: 'Temperature'}, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0])
 
 const model = ref('deepseek/deepseek-r1:free')
-const question = ref('')
 const temperature = ref(0.5)
 
 const loading = ref(false)
-
-const messages = ref<Record<string, string>[]>([
-  {
-    id: crypto.randomUUID(),
-    role: 'ai',
-    content: 'Hello! How may I help you today ?'
-  }
-])
 
 const thread = ref(crypto.randomUUID())
 
 const onSubmit = async (e: Event) => {
   e.preventDefault()
-  messages.value = [...messages.value, { id: crypto.randomUUID(), role: 'user', content: question.value }]
   loading.value = true
 
   try {
-    await useFetch('/api/chat', {
-      method: 'POST',
+    handleSubmit(e, {
       body: {
-        question: question.value,
         model: model.value,
         temperature: temperature.value,
         thread: thread.value
@@ -49,10 +42,6 @@ const onSubmit = async (e: Event) => {
   } catch(e) {
     console.error(e)
   }
-  // console.log('thread:', thread)
-  // console.log('question:', question.value)
-  // console.log('model:', model.value)
-  // console.log('temperature:', temperature.value)
 }
 </script>
 
@@ -66,7 +55,7 @@ const onSubmit = async (e: Event) => {
       <div class="shrink-0 min-h-[150px]">
         <form class="w-full" @submit="onSubmit">
           <div class="w-full flex gap-4 items-center">
-            <UTextarea v-model="question" class="grow-1" :maxrows="4" autoresize color="neutral" variant="subtle" placeholder="Ask a question about covid-19..." />
+            <UTextarea v-model="input" class="grow-1" :maxrows="4" autoresize color="neutral" variant="subtle" placeholder="Ask a question about covid-19..." />
             <UButton type="submit" class="shrink-0 hover:cursor-pointer">Send</UButton>
           </div>
           <div class="mt-4 w-full flex justify-between">
