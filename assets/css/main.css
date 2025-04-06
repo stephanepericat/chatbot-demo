@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
-.ai {
+.ai, .assistant {
   margin-bottom: calc(var(--spacing) * 8);
 }
 

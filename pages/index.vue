@@ -29,7 +29,6 @@ const thread = ref(crypto.randomUUID())
 
 const onSubmit = async (e: Event) => {
   e.preventDefault()
-  loading.value = true
 
   try {
     handleSubmit(e, {
@@ -43,6 +42,14 @@ const onSubmit = async (e: Event) => {
     console.error(e)
   }
 }
+
+watch(messages, () => {
+  if(!messages.value.length) {
+    return
+  }
+
+  loading.value = messages.value[messages.value.length -1].role === 'user'
+})
 </script>
 
 <template>
