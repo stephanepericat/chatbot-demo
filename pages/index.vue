@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import showdown from 'showdown'
 import { useChat } from '@ai-sdk/vue'
 import type { SelectItem } from '@nuxt/ui'
+
+const converter = new showdown.Converter()
 
 const { messages, input, handleSubmit } = useChat()
 
@@ -56,7 +59,7 @@ watch(messages, () => {
   <div class="mx-auto py-8 px-4 max-w-[48rem] h-[100vh]">
     <div class="flex flex-col h-full gap-8">
       <div class="grow-1 overflow-auto">
-        <div v-for="message in messages" :key="message.id" :class="message.role">{{ message.content }}</div>
+        <div v-for="message in messages" :key="message.id" :class="message.role" v-html="converter.makeHtml(message.content)" />
         <ThinkLoader v-if="loading" />
       </div>
       <div class="shrink-0 min-h-[150px]">
