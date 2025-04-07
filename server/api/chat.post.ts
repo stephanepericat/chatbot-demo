@@ -1,7 +1,7 @@
 import { LangChainAdapter, type Message } from 'ai';
 import { ChatOpenAI, OpenAIEmbeddings } from '@langchain/openai';
 import { ChatPromptTemplate } from '@langchain/core/prompts'
-import { Annotation, StateGraph } from '@langchain/langgraph'
+import { Annotation, MemorySaver, StateGraph } from '@langchain/langgraph'
 import type { Document } from "@langchain/core/documents";
 import { pull } from 'langchain/hub'
 import { QdrantVectorStore } from '@langchain/qdrant'
@@ -81,15 +81,19 @@ export default defineLazyEventHandler(() => {
       return { answer: response.content }
     }
     
-    const graph = new StateGraph(StateAnnotation)
+    
+    const workflow = new StateGraph(StateAnnotation)
       .addNode('retrieve', retrieve)
       .addNode('generate', generate)
       .addEdge('__start__', 'retrieve')
       .addEdge('retrieve', 'generate')
       .addEdge('generate', '__end__')
-      .compile()
+
+    const memory = new MemorySaver()
+    const graph = workflow.compile({ checkpointer: memory })
 
     const stream = await graph.stream({ question }, { streamMode: 'messages', configurable: { thread_id: thread } })
+
     const transformStream = new ReadableStream({
       async start(controller) {
         for await (const [message, _metadata] of stream) {
